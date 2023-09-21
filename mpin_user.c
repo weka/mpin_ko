@@ -254,7 +254,7 @@ static const struct file_operations mpin_fops = {
 };
 
 static struct miscdevice mpin_misc_device = {
-	.name = mpin_user_dev,
+	.name = MPIN_USER_N,
 	.minor = MISC_DYNAMIC_MINOR,
 	.fops = &mpin_fops,
 };

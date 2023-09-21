@@ -2,8 +2,9 @@
 #ifndef _MPIN_USER_H
 #define _MPIN_USER_H
 
-/* open("/dev/"mpin_user_dev, ...) */
-#define mpin_user_dev "mpin_user_pages"
+#define MPIN_USER_N "mpin_user"
+#define MPIN_USER_PATH "/dev/" MPIN_USER_N
+/* User does: open(MPIN_USER_PATH, ...) */
 
 /**
  * struct mpin_user_address - Expected pin user space address and size
