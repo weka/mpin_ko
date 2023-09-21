@@ -44,9 +44,11 @@
  * "pretend" to pin pages anyway on old kernels, but actually do nothing.
  */
 #ifndef XA_FLAGS_ALLOC
-#undef ENABLE_MPIN
+#	undef ENABLE_MPIN
+#	define MPIN_ENABLED 0
 #else
-#define ENABLE_MPIN
+#	define ENABLE_MPIN
+#	define MPIN_ENABLED 1
 #endif
 
 #ifdef ENABLE_MPIN
@@ -279,4 +281,6 @@ module_init(mpin_misc_init)
 module_exit(mpin_misc_exit)
 
 MODULE_LICENSE("GPL");
-MODULE_VERSION(__stringify(WEKANODE_VERSION));
+MODULE_VERSION(__stringify(MPIN_USER_VERSION));
+
+#pragma message("MPIN_USER_VERSION " MPIN_USER_VERSION " enabled=" __stringify(MPIN_ENABLED))
