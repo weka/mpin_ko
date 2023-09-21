@@ -244,6 +244,28 @@ static long mpin_unl_ioctl(struct file *filep, unsigned int cmd,
 #endif /* ! ENABLE_MPIN */
 }
 
+static ssize_t mpin_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
+{
+	const char *s;
+	ssize_t l;
+
+	if (*ppos > 0)
+		return 0;
+
+#define STR_LEN(STR) do {s = STR; l = sizeof(STR); } while (0)
+#ifdef ENABLE_MPIN
+	STR_LEN("1\n");
+#else
+	STR_LEN("0\n");
+#endif
+
+	if (copy_to_user(buf, s, l))
+		return -EFAULT;
+
+	*ppos += l;
+	return l - 1;
+}
+
 /* ~~~ Register/unregister the mpin_user interface ~~~ */
 
 #include <linux/proc_fs.h>
@@ -268,6 +290,7 @@ static const struct proc_ops proc_mpin_user_ops = {
 	.proc_open = mpin_open,
 	.proc_release = mpin_release,
 	.proc_ioctl = mpin_unl_ioctl,
+	.proc_read = mpin_read,
 };
 
 static int __init mpin_misc_init(void)
