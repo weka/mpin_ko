@@ -214,31 +214,34 @@ static int mpin_release(struct inode *inode, struct file *file)
 static long mpin_unl_ioctl(struct file *filep, unsigned int cmd,
 				unsigned long arg)
 {
+#ifdef ENABLE_MPIN
 	struct mpin_user_container *p = filep->private_data;
 	struct mpin_user_address addr;
 
 	switch (cmd) {
 	case MPIN_CMD_PIN:
-#ifdef ENABLE_MPIN
 		if (copy_from_user(&addr, (void __user *)arg, sizeof(struct mpin_user_address)))
 			return -EFAULT;
 		return mpin_user_pin_page(p, &addr);
-#else
-		return 0;
-#endif
 
 	case MPIN_CMD_UNPIN:
-#ifdef ENABLE_MPIN
 		if (copy_from_user(&addr, (void __user *)arg, sizeof(struct mpin_user_address)))
 			return -EFAULT;
 		return mpin_user_unpin_page(p, &addr);
-#else
-		return 0;
-#endif
 
 	default:
 		return -EINVAL;
 	}
+#else /* ! ENABLE_MPIN */
+	switch (cmd) {
+	case MPIN_CMD_PIN:
+		return 0;
+	case MPIN_CMD_UNPIN:
+		return 0;
+	default:
+		return -EINVAL;
+	}
+#endif /* ! ENABLE_MPIN */
 }
 
 static const struct file_operations mpin_fops = {
