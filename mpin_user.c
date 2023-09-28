@@ -246,18 +246,11 @@ static long mpin_unl_ioctl(struct file *filep, unsigned int cmd,
 
 static ssize_t mpin_read(struct file *file, char __user *buf, size_t nbytes, loff_t *ppos)
 {
-	const char *s;
-	ssize_t l;
+	const char s[] = __stringify(MPIN_ENABLED) "\n";
+	ssize_t l = sizeof(s);
 
 	if (*ppos > 0)
 		return 0;
-
-#define STR_LEN(STR) do {s = STR; l = sizeof(STR); } while (0)
-#ifdef ENABLE_MPIN
-	STR_LEN("1\n");
-#else
-	STR_LEN("0\n");
-#endif
 
 	if (copy_to_user(buf, s, l))
 		return -EFAULT;
