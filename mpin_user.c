@@ -246,35 +246,43 @@ static long mpin_unl_ioctl(struct file *filep, unsigned int cmd,
 #endif /* ! ENABLE_MPIN */
 }
 
-static const struct file_operations mpin_fops = {
-	.owner = THIS_MODULE,
-	.open = mpin_open,
-	.release = mpin_release,
-	.unlocked_ioctl = mpin_unl_ioctl,
-};
+/* ~~~ Register/unregister the mpin_user interface ~~~ */
 
-static struct miscdevice mpin_misc_device = {
-	.name = MPIN_USER_N,
-	.minor = MISC_DYNAMIC_MINOR,
-	.fops = &mpin_fops,
+#include <linux/proc_fs.h>
+/* Kernel 5.6 changed the proc_fs API */
+#if LINUX_VERSION_CODE < KERNEL_VERSION(5, 6, 0)
+#	define OWNER_THIS_MODULE .owner = THIS_MODULE,
+#	define proc_ops file_operations
+#	define proc_open	open
+#	define proc_read	read
+#	define proc_write	write
+#	define proc_release	release
+#	define proc_mmap	mmap
+#	define proc_poll	poll
+#	define proc_lseek	llseek
+#	define proc_ioctl	unlocked_ioctl
+#else
+#	define OWNER_THIS_MODULE
+#endif
+
+static const struct proc_ops proc_mpin_user_ops = {
+	OWNER_THIS_MODULE
+	.proc_open = mpin_open,
+	.proc_release = mpin_release,
+	.proc_ioctl = mpin_unl_ioctl,
 };
 
 static int __init mpin_misc_init(void)
 {
-	int error;
-
-	error = misc_register(&mpin_misc_device);
-	if (error) {
-		pr_err("mpin: misc_register failed!!!\n");
-		return error;
-	}
+	proc_create(MPIN_USER_N, 0666, NULL, &proc_mpin_user_ops);
+	pr_info("%s loaded. Pinning is %s\n",MPIN_USER_N, MPIN_ENABLED ? "enabled" : "disabled");
 	return 0;
 }
 
 static void __exit mpin_misc_exit(void)
 {
-	misc_deregister(&mpin_misc_device);
-	pr_info("misc_register exit done!!!\n");
+	pr_info("%s unloaded\n", MPIN_USER_N);
+	remove_proc_entry(MPIN_USER_N, NULL);
 }
 
 module_init(mpin_misc_init)
