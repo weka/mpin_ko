@@ -3,7 +3,7 @@
 #define _MPIN_USER_H
 
 #define MPIN_USER_N "mpin_user"
-#define MPIN_USER_PATH "/dev/" MPIN_USER_N
+#define MPIN_USER_PATH "/proc/" MPIN_USER_N
 /* User does: open(MPIN_USER_PATH, ...) */
 
 /**
