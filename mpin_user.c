@@ -44,9 +44,11 @@
  * "pretend" to pin pages anyway on old kernels, but actually do nothing.
  */
 #ifndef XA_FLAGS_ALLOC
-#undef ENABLE_MPIN
+#	undef ENABLE_MPIN
+#	define MPIN_ENABLED 0
 #else
-#define ENABLE_MPIN
+#	define ENABLE_MPIN
+#	define MPIN_ENABLED 1
 #endif
 
 #ifdef ENABLE_MPIN
@@ -288,14 +290,8 @@ static const struct proc_ops proc_mpin_user_ops = {
 
 static int __init mpin_misc_init(void)
 {
-#ifdef ENABLE_MPIN
-	const char *en = "enabled";
-#else
-	const char *en = "disabled";
-#endif
-
 	proc_create(MPIN_USER_N, 0666, NULL, &proc_mpin_user_ops);
-	pr_info("%s loaded. Pinning is %s\n", MPIN_USER_N, en);
+	pr_info("%s loaded. Pinning is %s\n",MPIN_USER_N, MPIN_ENABLED ? "enabled" : "disabled");
 	return 0;
 }
 
