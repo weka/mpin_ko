@@ -295,12 +295,20 @@ static const struct proc_ops proc_mpin_user_ops = {
 
 static int __init mpin_misc_init(void)
 {
+#ifdef ENABLE_MPIN
+	const char *en = "enabled";
+#else
+	const char *en = "disabled";
+#endif
+
 	proc_create(MPIN_USER_N, 0666, NULL, &proc_mpin_user_ops);
+	pr_info("%s loaded. Pinning is %s\n", MPIN_USER_N, en);
 	return 0;
 }
 
 static void __exit mpin_misc_exit(void)
 {
+	pr_info("%s unloaded\n", MPIN_USER_N);
 	remove_proc_entry(MPIN_USER_N, NULL);
 }
 
