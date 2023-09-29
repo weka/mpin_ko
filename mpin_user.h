@@ -26,7 +26,7 @@ struct mpin_user_address {
 
 #include <sys/ioctl.h>
 
-static inline mpin_user_add(int fd, void *virt, size_t size)
+static inline int mpin_user_add(int fd, void *virt, size_t size)
 {
 	struct mpin_user_address mua = {
 		.addr = (__u64)virt,
@@ -36,7 +36,7 @@ static inline mpin_user_add(int fd, void *virt, size_t size)
 	return ioctl(fd, MPIN_CMD_PIN, &mua);
 }
 
-static inline mpin_user_remove(int fd, void *virt, size_t size)
+static inline int mpin_user_remove(int fd, void *virt, size_t size)
 {
 	struct mpin_user_address mua = {
 		.addr = (__u64)virt,
