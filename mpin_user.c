@@ -306,5 +306,3 @@ module_exit(mpin_misc_exit)
 
 MODULE_LICENSE("GPL");
 MODULE_VERSION(__stringify(MPIN_USER_VERSION));
-
-#pragma message("MPIN_USER_VERSION " MPIN_USER_VERSION " enabled=" __stringify(MPIN_ENABLED))
