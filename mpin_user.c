@@ -226,41 +226,28 @@ static int mpin_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-static long mpin_unl_ioctl(struct file *filep, unsigned int cmd,
-				unsigned long arg)
+static long mpin_unl_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
 {
 #ifdef ENABLE_MPIN
 	struct mpin_user_container *p = filep->private_data;
 	struct mpin_user_address addr;
-	int (*func)(struct mpin_user_container *priv, struct mpin_user_address *addr);
 
-	switch (cmd) {
-	case MPIN_CMD_PIN:
-		func = mpin_user_pin_page;
-		break;
-
-	case MPIN_CMD_UNPIN:
-		func = mpin_user_unpin_page;
-		break;
-
-	default:
-		return -EINVAL;
-	}
-
-	if (copy_from_user(&addr, (void __user *)arg, sizeof(struct mpin_user_address)))
+	if (copy_from_user(&addr, (void __user *)arg, sizeof(addr)))
 		return -EFAULT;
 
-	return (*func)(p, &addr);
-
-#else /* ! ENABLE_MPIN */
 	switch (cmd) {
 	case MPIN_CMD_PIN:
-		return 0;
+		return mpin_user_pin_page(p, &addr);
+
 	case MPIN_CMD_UNPIN:
-		return 0;
+		return mpin_user_unpin_page(p, &addr);
+
 	default:
 		return -EINVAL;
 	}
+
+#else /* ! ENABLE_MPIN */
+	return -ENOTSUPP;
 #endif /* ! ENABLE_MPIN */
 }
 
