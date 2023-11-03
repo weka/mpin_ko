@@ -11,7 +11,12 @@ KERNEL_PATH ?= /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
 
 # ~~~ This Part is the Kbuild side
-EXTRA_CFLAGS = -Winline -Wall -Werror -I$(PWD) -D MPIN_USER_VERSION=\"$(MPIN_USER_VERSION)\"
+EXTRA_CFLAGS = -Winline -Wall -I$(PWD) -D MPIN_USER_VERSION=\"$(MPIN_USER_VERSION)\"
+
+ifdef MPIN_NO_WARN
+EXTRA_CFLAGS += -Werror
+endif
+
 obj-m := mpin_user.o
 
 # ~~~ This part is so we can use make inside the source dir to make below target options
