@@ -11,7 +11,7 @@ KERNEL_PATH ?= /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
 
 # ~~~ This Part is the Kbuild side
-EXTRA_CFLAGS = -Winline -Wall -I$(PWD) -D MPIN_USER_VERSION=\"$(MPIN_USER_VERSION)\"
+EXTRA_CFLAGS = -Wall -I$(PWD) -D MPIN_USER_VERSION=\"$(MPIN_USER_VERSION)\"
 
 ifdef MPIN_NO_WARN
 EXTRA_CFLAGS += -Werror
