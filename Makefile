@@ -3,7 +3,7 @@
 # Makefile & Kbuild file for building installing the mpin_user.ko driver
 # options make, make install, make clean ...
 
-MPIN_USER_VERSION ?= 1.0
+MPIN_USER_VERSION ?= 1.0.1
 
 #default is to compile against the running kernel (kernel-devel installed on the system)
 # do 'make KERNEL_PATH=/home/user/my_kernel_path/ to compile against an alternative path
@@ -11,7 +11,7 @@ KERNEL_PATH ?= /lib/modules/$(shell uname -r)/build
 PWD := $(shell pwd)
 
 # ~~~ This Part is the Kbuild side
-EXTRA_CFLAGS = -Wall -I$(PWD) -D MPIN_USER_VERSION=\"$(MPIN_USER_VERSION)\"
+EXTRA_CFLAGS = -Wall -I$(PWD) -D "MPIN_USER_VERSION=$(MPIN_USER_VERSION)"
 
 ifdef MPIN_NO_WARN
 EXTRA_CFLAGS += -Werror
