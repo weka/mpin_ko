@@ -40,8 +40,7 @@
  * older than where xarray.h is included, based on our observations. At
  * any rate, our implementation depends on xarray.
  *
- * In order to provide the same API to user space we
- * "pretend" to pin pages anyway on old kernels, but actually do nothing.
+ * We will report an error on device open if memory pinning is not possible.
  */
 #ifndef XA_FLAGS_ALLOC
 #	undef ENABLE_MPIN
@@ -54,7 +53,6 @@
 #ifdef ENABLE_MPIN
 
 #ifndef FOLL_PIN
-
 static inline
 long pin_user_pages(unsigned long start, unsigned long nr_pages,
 		unsigned int gup_flags, struct page **pages,
@@ -188,9 +186,11 @@ static int mpin_open(struct inode *inode, struct file *file)
 
 	file->private_data = p;
 	xa_init(&p->array);
-#endif /* ENABLE_MPIN */
 
 	return 0;
+#else
+    return -ENOTSUPP;
+#endif /* ENABLE_MPIN */
 }
 
 static int mpin_release(struct inode *inode, struct file *file)
