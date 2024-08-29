@@ -53,6 +53,7 @@
 #ifdef ENABLE_MPIN
 
 #ifndef FOLL_PIN
+#ifndef D_HAS_PIN_PAGES
 static inline
 long pin_user_pages(unsigned long start, unsigned long nr_pages,
 		unsigned int gup_flags, struct page **pages,
@@ -73,6 +74,7 @@ void unpin_user_pages(struct page **pages, unsigned long npages)
 #define	FOLL_LONGTERM 0
 #endif
 
+#endif
 #endif /* missing FOLL_PIN, introduced in Linux 5.6 */
 
 struct mpin_user_container {
