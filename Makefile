@@ -17,14 +17,16 @@ ifdef MPIN_NO_WARN
 EXTRA_CFLAGS += -Werror
 endif
 
-D_HAS_PIN_PAGES = $(shell grep pin_user_pages /usr/src/kernels/$(shell uname -r)/include/linux/mm.h )
+$(info  $(KERNEL_PATH))
+
+D_HAS_PIN_PAGES = $(shell grep pin_user_pages $(KERNEL_PATH)/include/linux/mm.h)
+
 ifneq ($(D_HAS_PIN_PAGES),)
 # $(info "YES D_HAS_PIN_PAGES")
 ccflags-y += -DD_HAS_PIN_PAGES
 else
 # $(info "NOT D_HAS_PIN_PAGES")
 endif
-
 
 obj-m := mpin_user.o
 

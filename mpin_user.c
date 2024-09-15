@@ -123,7 +123,11 @@ static int mpin_user_pin_page(struct mpin_user_container *priv, struct mpin_user
 		goto free;
 	}
 
+#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 5, 0)
 	ret = pin_user_pages(addr->addr & PAGE_MASK, nr_pages, flags, pages, NULL);
+#else
+	ret = pin_user_pages(addr->addr & PAGE_MASK, nr_pages, flags, pages);
+#endif
 	if (ret != nr_pages) {
 		pr_err("uacce: Failed to pin page\n");
 		goto free_p;
