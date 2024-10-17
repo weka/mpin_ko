@@ -55,7 +55,7 @@
 /* In v6.3 FOLL_PIN was changed to an enum (no longer defined)
  * But we still do not need to define pin_user_pages
  */
-#if !defined(FOLL_PIN) && (LINUX_VERSION_CODE < KERNEL_VERSION(6, 3, 0))
+#if !defined(FOLL_PIN) && (LINUX_VERSION_CODE < KERNEL_VERSION(6, 3, 0)) && !defined BP_HAS_PIN_USER_PAGES
 
 static inline
 long pin_user_pages(unsigned long start, unsigned long nr_pages,
@@ -77,15 +77,20 @@ void unpin_user_pages(struct page **pages, unsigned long npages)
 #define	FOLL_LONGTERM 0
 #endif
 
-#endif /* missing FOLL_PIN, introduced in Linux 5.6 */
+#	define bp_pin_user_pages(start, nr_pages, gup_flags, pages) \
+		pin_user_pages(start, nr_pages, gup_flags, pages, NULL)
 
-#if LINUX_VERSION_CODE < KERNEL_VERSION(6, 5, 0)
+#else /* Kernel > 6.3 */
+
+#if defined BP_PIN_USER_PAGES_HAS_VMAS
 #	define bp_pin_user_pages(start, nr_pages, gup_flags, pages) \
 		pin_user_pages(start, nr_pages, gup_flags, pages, NULL)
 #else
 #	define bp_pin_user_pages(start, nr_pages, gup_flags, pages) \
 		pin_user_pages(start, nr_pages, gup_flags, pages)
 #endif
+
+#endif /* Kernel > 6.3 */
 
 struct mpin_user_container {
 	struct xarray array;
