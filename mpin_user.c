@@ -92,6 +92,19 @@ void unpin_user_pages(struct page **pages, unsigned long npages)
 
 #endif /* Kernel > 6.3 */
 
+/* Looking for mmap_read_un/lock
+ * Old Kernels (< 5.7) did not have this header file at all.
+ * The first version of this file introduces them
+ */
+#ifndef _LINUX_MMAP_LOCK_H
+static inline void mmap_read_lock(struct mm_struct *mm)
+{
+}
+static inline void mmap_read_unlock(struct mm_struct *mm)
+{
+}
+#endif
+
 struct mpin_user_container {
 	struct xarray array;
 };
@@ -138,7 +151,9 @@ static int mpin_user_pin_page(struct mpin_user_container *priv, struct mpin_user
 		goto free;
 	}
 
+	mmap_read_lock(current->mm);
 	ret = bp_pin_user_pages(addr->addr & PAGE_MASK, nr_pages, flags, pages);
+	mmap_read_unlock(current->mm);
 	if (ret != nr_pages) {
 		pr_err("uacce: Failed to pin page\n");
 		goto free_p;
